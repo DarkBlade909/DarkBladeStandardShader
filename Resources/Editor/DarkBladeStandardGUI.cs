@@ -59,7 +59,7 @@ internal class DarkBladeStandardGUI: ShaderGUI
 	MaterialProperty ZWrite = null;
 	MaterialProperty flipBackfaceNormals = null;
 
-    MaterialEditor me;
+	MaterialEditor me;
 
 	bool m_FirstTimeApply = true;
 
@@ -109,7 +109,7 @@ internal class DarkBladeStandardGUI: ShaderGUI
 		toggleUseBaseNormal = FindProperty("_Toggle_USEBASENORMAL", props);
 		ZWrite = FindProperty("_ZWrite", props);
 		flipBackfaceNormals = FindProperty("_Toggle_FLIPBACKFACENORMALS", props);
-    }
+	}
 
 	public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
 	{
@@ -260,45 +260,88 @@ internal class DarkBladeStandardGUI: ShaderGUI
 
 		switch (material.GetInt("_Mode"))
 		{
-			case 0:
+			case 0: // opaque
 				material.SetOverrideTag("RenderType", "");
 				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
 				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
 				material.SetInt("_ZWrite", 1);
+				material.SetInt("_AlphaToMask", 0);
 				material.DisableKeyword("_ALPHATEST_ON");
-				material.DisableKeyword("_ALPHABLEND_ON");
+				material.DisableKeyword("_ALPHAFADE_ON");
 				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.DisableKeyword("_ALPHAMODULATE_ON");
 				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry + material.GetInt("_QueueOffset");
 				break;
-			case 1:
+			case 1: // cutout
 				material.SetOverrideTag("RenderType", "TransparentCutout");
 				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
 				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
 				material.SetInt("_ZWrite", 1);
+				material.SetInt("_AlphaToMask", 0);
 				material.EnableKeyword("_ALPHATEST_ON");
-				material.DisableKeyword("_ALPHABLEND_ON");
+				material.DisableKeyword("_ALPHAFADE_ON");
 				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest + material.GetInt("_QueueOffset");
+				material.DisableKeyword("_ALPHAMODULATE_ON");
+				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest + material.GetInt("_QueueOffset");	
 				break;
-			case 2:
+			case 2: // fade
 				material.SetOverrideTag("RenderType", "Transparent");
-				material.SetInt("_SrcBlend", 5);
-				material.SetInt("_DstBlend", 10);
+				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
 				material.SetInt("_ZWrite", 0);
+				material.SetInt("_AlphaToMask", 1);
 				material.DisableKeyword("_ALPHATEST_ON");
-				material.DisableKeyword("_ALPHABLEND_ON");
-				material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.EnableKeyword("_ALPHAFADE_ON");
+				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.DisableKeyword("_ALPHAMODULATE_ON");
 				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + material.GetInt("_QueueOffset");
 				break;
-			case 3:
+			case 3: // premultiply
 				material.SetOverrideTag("RenderType", "Transparent");
 				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
 				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
 				material.SetInt("_ZWrite", 0);
+				material.SetInt("_AlphaToMask", 0);
 				material.DisableKeyword("_ALPHATEST_ON");
-				material.DisableKeyword("_ALPHABLEND_ON");
+				material.DisableKeyword("_ALPHAFADE_ON");
 				material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.DisableKeyword("_ALPHAMODULATE_ON");
 				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + material.GetInt("_QueueOffset");
+				break;
+			case 4: // additive
+				SetupTransparentMaterial(material);
+				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+				material.SetInt("_ZWrite", 0);
+				material.SetInt("_AlphaToMask", 0);
+				material.DisableKeyword("_ALPHATEST_ON");
+				material.EnableKeyword("_ALPHAFADE_ON");
+				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.DisableKeyword("_ALPHAMODULATE_ON");
+				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + material.GetInt("_QueueOffset");
+				break;
+			case 5: // multiply
+				SetupTransparentMaterial(material);
+				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.DstColor);
+				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+				material.SetInt("_ZWrite", 0);
+				material.SetInt("_AlphaToMask", 0);
+				material.DisableKeyword("_ALPHATEST_ON");
+				material.DisableKeyword("_ALPHAFADE_ON");
+				material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.EnableKeyword("_ALPHAMODULATE_ON");
+				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + material.GetInt("_QueueOffset");
+				break;
+			case 6: // transclipping
+				material.SetOverrideTag("RenderType", "TransparentCutout");
+				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+				material.SetInt("_ZWrite", 1);
+				material.SetInt("_AlphaToMask", 0);
+				material.DisableKeyword("_ALPHATEST_ON");
+				material.DisableKeyword("_ALPHAFADE_ON");
+				material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+				material.DisableKeyword("_ALPHAMODULATE_ON");
+				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest + 10 + material.GetInt("_QueueOffset");
 				break;
 		}
 	}

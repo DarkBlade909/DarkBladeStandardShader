@@ -170,7 +170,7 @@ internal class DarkBladeStandardGUI: ShaderGUI
 	{
 		DGUI.PropertyGroup(() => {
 			me.ShaderProperty(mode, DarkBladeTips.standBlendMode);
-			if (mode.floatValue == 1)
+			if (mode.floatValue == 1 || mode.floatValue == 6)
 				me.ShaderProperty(cutoff, DarkBladeTips.alphaCutoffText);
 			EditorGUI.BeginChangeCheck();
 			SetupMaterialWithBlendMode(material);
@@ -309,7 +309,7 @@ internal class DarkBladeStandardGUI: ShaderGUI
 				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + material.GetInt("_QueueOffset");
 				break;
 			case 4: // additive
-				SetupTransparentMaterial(material);
+				material.SetOverrideTag("RenderType", "Transparent");
 				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
 				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
 				material.SetInt("_ZWrite", 0);
@@ -321,7 +321,7 @@ internal class DarkBladeStandardGUI: ShaderGUI
 				material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + material.GetInt("_QueueOffset");
 				break;
 			case 5: // multiply
-				SetupTransparentMaterial(material);
+				material.SetOverrideTag("RenderType", "Transparent");
 				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.DstColor);
 				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
 				material.SetInt("_ZWrite", 0);
@@ -335,6 +335,7 @@ internal class DarkBladeStandardGUI: ShaderGUI
 			case 6: // transclipping
 				material.SetOverrideTag("RenderType", "TransparentCutout");
 				material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+				material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
 				material.SetInt("_ZWrite", 1);
 				material.SetInt("_AlphaToMask", 0);
 				material.DisableKeyword("_ALPHATEST_ON");

@@ -7,11 +7,12 @@ Basic Standard shader for VRChat with some extra features.
 - Packed ORM Maps
 - Detail Maps
 - Clearcoat
+- Anisotropy
 - Geometric Specular Anti-aliasing
 - Indirect Specular
 - Specular Occlusion
 - Backface Normals
-- Green Channel Flip Toggle
+- Green Channel Flip Toggles
 
 ## Credits
 

@@ -32,6 +32,14 @@ internal class DarkBladeStandardGUI: ShaderGUI
 	MaterialProperty clearcoatStrength = null;
 	MaterialProperty cull = null;
 	MaterialProperty cutoff = null;
+	MaterialProperty toggleAnisotropy = null;
+	MaterialProperty anisotropy = null;
+	MaterialProperty anisotropicRotation = null;
+	MaterialProperty anisotropicColor = null;
+	MaterialProperty anisotropicMask = null;
+	MaterialProperty anisotropicDirection = null;
+	MaterialProperty toggleanisotropicDirection = null;
+	MaterialProperty shadowmap = null;
 	MaterialProperty detailAlbedoStrength = null;
 	MaterialProperty detailNormalPower = null;
 	MaterialProperty detailOcclusionStrength = null;
@@ -83,6 +91,14 @@ internal class DarkBladeStandardGUI: ShaderGUI
 		clearcoatStrength = FindProperty("_ClearcoatStrength", props);
 		cull = FindProperty("_Cull", props);
 		cutoff = FindProperty("_Cutoff", props);
+		toggleAnisotropy = FindProperty("_Toggle_ANISOTROPY", props);
+		anisotropy = FindProperty("_Anisotropy", props);
+		anisotropicRotation = FindProperty("_AnisotropicRotation", props);
+		anisotropicColor = FindProperty("_AnisotropicColor", props);
+        anisotropicMask = FindProperty("_AnisotropicMask", props);
+		anisotropicDirection = FindProperty("_AnisotropicDirection", props);
+		toggleanisotropicDirection = FindProperty("_Toggle_USEANISODIRECTION", props);
+		shadowmap = FindProperty("_ShadowMap", props);
 		detailAlbedoStrength = FindProperty("_DetailAlbedoStrength", props);
 		detailNormalPower = FindProperty("_DetailNormalPower", props);
 		detailOcclusionStrength = FindProperty("_DetailOcclusionStrength", props);
@@ -156,7 +172,12 @@ internal class DarkBladeStandardGUI: ShaderGUI
 				DoDistortionArea(material);
 			});
 			DGUI.Space2();
-
+			DGUI.Space2();
+			DGUI.BoldLabel("Anisotropy");
+			DGUI.PropertyGroup(() => {
+				DoAnisotropyArea(material);
+			});
+			DGUI.Space2();
 			DGUI.BoldLabel("Render Settings");
 			DGUI.PropertyGroup(() => {
 				DoRenderingArea(material);
@@ -241,12 +262,38 @@ internal class DarkBladeStandardGUI: ShaderGUI
 			});
 	}
 
+	void DoAnisotropyArea(Material material)
+	{
+		DGUI.PropertyGroup(() => {
+			me.ShaderProperty(toggleAnisotropy, "Anisotropy");
+		});
+		EditorGUI.BeginChangeCheck();
+		if (toggleAnisotropy.floatValue == 1)
+			DGUI.PropertyGroup(() => {
+				me.ShaderProperty(anisotropy, "Anisotropy");
+				me.ShaderProperty(anisotropicRotation, "Anisotropic Rotation");
+				me.ShaderProperty(anisotropicColor, "Anisotropic Color");
+				me.TexturePropertySingleLine(DarkBladeTips.anisotropicMask, anisotropicMask);
+				me.ShaderProperty(toggleanisotropicDirection, "Use Anisotropic Direction Map");
+				if (toggleanisotropicDirection.floatValue == 1)
+					DGUI.PropertyGroup(() => 
+					{
+						me.TexturePropertySingleLine(DarkBladeTips.anisotropicDirection, anisotropicDirection);
+					});
+				if (toggleanisotropicDirection.floatValue == 1)
+					DGUI.PropertyGroup(() =>
+					{
+						DGUI.TextureSO(me, anisotropicDirection);
+					});
+				});
+	}
 	void DoRenderingArea(Material material)
 	{
 		me.ShaderProperty(cull, "Culling Mode");
 		me.ShaderProperty(flipBackfaceNormals, "Flip Backface Normals");
 		me.ShaderProperty(indirectSpec, "Indirect Specular");
 		me.ShaderProperty(specularAO, "Specular Occlusion");
+		me.TexturePropertySingleLine(DarkBladeTips.shadowMap, shadowmap);
 		me.ShaderProperty(toggleGSAA, "Geometric Specular Anti-Aliasing");
 		if (toggleGSAA.floatValue == 1)
 			DGUI.PropertyGroup(() => {

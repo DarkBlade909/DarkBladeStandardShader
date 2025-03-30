@@ -161,6 +161,7 @@ namespace DarkBlade {
 		public static GUIContent clearCoatNormal = new GUIContent("Clearcoat Normal Map", "Normal map used for clearcoat.");
 		public static GUIContent anisotropicMask = new GUIContent("Anisotropic Mask", "Mask map used to mask the anisotropy.");
 		public static GUIContent anisotropicDirection = new GUIContent("Anisotropic Direction", "Vector map used for anisotropic direction.");
+		public static GUIContent anisotropicRotationMap = new GUIContent("Anisotropic Rotation Map", "Black and white map used for anisotropic rotation.");
 		public static GUIContent shadowMap = new GUIContent("Shadow Map", "Baked Shadow map, useful for areas that need to be in shadow all the time.");
 		public static GUIContent crossMode = new GUIContent("Crossfade Mode", "While the environment lighting is brighter than the threshold value, emission will be off. As lighting gets darker, crossing the threshold value, it will get fade on and reach maximum brightness.");
 		public static GUIContent reactThresh = new GUIContent("Threshold", "The lighting brightness threshold that determines when emission will be on or off.");

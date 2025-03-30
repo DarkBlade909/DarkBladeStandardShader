@@ -38,6 +38,7 @@ internal class DarkBladeStandardGUI: ShaderGUI
 	MaterialProperty anisotropicColor = null;
 	MaterialProperty anisotropicMask = null;
 	MaterialProperty anisotropicDirection = null;
+	MaterialProperty anisotropicRotationMap = null;
 	MaterialProperty toggleanisotropicDirection = null;
 	MaterialProperty shadowmap = null;
 	MaterialProperty detailAlbedoStrength = null;
@@ -66,6 +67,13 @@ internal class DarkBladeStandardGUI: ShaderGUI
 	MaterialProperty toggleUseBaseNormal = null;
 	MaterialProperty ZWrite = null;
 	MaterialProperty flipBackfaceNormals = null;
+	MaterialProperty monoSH = null;
+	MaterialProperty lightmapSpecular = null;
+	MaterialProperty nonlinearSH = null;
+	MaterialProperty bicubicLightmap = null;
+	MaterialProperty nonlinearLightProbeSH = null;
+	MaterialProperty specularOcclusion = null;
+	MaterialProperty specularOcclusionSharpness = null;
 
 	MaterialEditor me;
 
@@ -94,6 +102,7 @@ internal class DarkBladeStandardGUI: ShaderGUI
 		toggleAnisotropy = FindProperty("_Toggle_ANISOTROPY", props);
 		anisotropy = FindProperty("_Anisotropy", props);
 		anisotropicRotation = FindProperty("_AnisotropicRotation", props);
+		anisotropicRotationMap = FindProperty("_AnisotropicRotationMap", props);
 		anisotropicColor = FindProperty("_AnisotropicColor", props);
         anisotropicMask = FindProperty("_AnisotropicMask", props);
 		anisotropicDirection = FindProperty("_AnisotropicDirection", props);
@@ -125,6 +134,13 @@ internal class DarkBladeStandardGUI: ShaderGUI
 		toggleUseBaseNormal = FindProperty("_Toggle_USEBASENORMAL", props);
 		ZWrite = FindProperty("_ZWrite", props);
 		flipBackfaceNormals = FindProperty("_Toggle_FLIPBACKFACENORMALS", props);
+		monoSH = FindProperty("_Toggle_MONOSH", props);
+		lightmapSpecular = FindProperty("_Toggle_LIGHTMAPSPECULAR", props);
+		nonlinearSH = FindProperty("_Toggle_BAKERYNLSH", props);
+		bicubicLightmap = FindProperty("_Toggle_BICUBICLIGHTMAP", props);
+		nonlinearLightProbeSH = FindProperty("_Toggle_NLLIGHTPROBESH", props);
+		specularOcclusion = FindProperty("_SpecularOcclusion", props);
+		specularOcclusionSharpness = FindProperty("_SpecularOcclusionSharpness", props);
 	}
 
 	public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
@@ -172,10 +188,14 @@ internal class DarkBladeStandardGUI: ShaderGUI
 				DoDistortionArea(material);
 			});
 			DGUI.Space2();
-			DGUI.Space2();
 			DGUI.BoldLabel("Anisotropy");
 			DGUI.PropertyGroup(() => {
 				DoAnisotropyArea(material);
+			});
+			DGUI.Space2();
+			DGUI.BoldLabel("Lightmap");
+			DGUI.PropertyGroup(() => {
+			DoLightmapArea(material);
 			});
 			DGUI.Space2();
 			DGUI.BoldLabel("Render Settings");
@@ -272,6 +292,7 @@ internal class DarkBladeStandardGUI: ShaderGUI
 			DGUI.PropertyGroup(() => {
 				me.ShaderProperty(anisotropy, "Anisotropy");
 				me.ShaderProperty(anisotropicRotation, "Anisotropic Rotation");
+				me.TexturePropertySingleLine(DarkBladeTips.anisotropicRotationMap, anisotropicRotationMap);
 				me.ShaderProperty(anisotropicColor, "Anisotropic Color");
 				me.TexturePropertySingleLine(DarkBladeTips.anisotropicMask, anisotropicMask);
 				me.ShaderProperty(toggleanisotropicDirection, "Use Anisotropic Direction Map");
@@ -287,6 +308,22 @@ internal class DarkBladeStandardGUI: ShaderGUI
 					});
 				});
 	}
+	void DoLightmapArea(Material material)
+	{
+        me.ShaderProperty(monoSH, "MonoSH");
+		if (monoSH.floatValue == 1)
+			material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+				if (monoSH.floatValue == 1)
+					DGUI.PropertyGroup(() => {
+						me.ShaderProperty(lightmapSpecular, "Lightmap Specular");
+						me.ShaderProperty(nonlinearSH, "Bakery Non-Linear SH");
+					});
+				me.ShaderProperty(bicubicLightmap, "Bicubic Lightmap Sampling");
+				me.ShaderProperty(nonlinearLightProbeSH, "Non-Linear Light Probe SH");
+				me.ShaderProperty(specularOcclusion, "Specular Occlusion");
+				me.ShaderProperty(specularOcclusionSharpness, "Specular Occlusion Sharpness");
+	}
+
 	void DoRenderingArea(Material material)
 	{
 		me.ShaderProperty(cull, "Culling Mode");

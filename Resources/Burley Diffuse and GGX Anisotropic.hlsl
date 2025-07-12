@@ -27,10 +27,10 @@ half D_GGX_2(half NoH, half roughness)
 {
 	half a = NoH * roughness;
 	half k = roughness / (1.0 - NoH * NoH + a * a);
-	return k * k * (1.0 / UNITY_PI);
+	return k * k * (1.0 / PI);
 }
 
-// float D_GGX_Anisotropic_1(float NoH, half LoH, float3 h, float3 t, float3 b, float at, float ab)
+// float D_GGX_Anisotropic_2_1(float NoH, half LoH, float3 h, float3 t, float3 b, float at, float ab)
 // {
 // 	half ToH = dot(t, h);
 // 	half BoH = dot(b, h);
@@ -42,7 +42,7 @@ half D_GGX_2(half NoH, half roughness)
 // 	return w2 * (LoH2 * 4);	
 // }
 
-// float D_GGX_Anisotropic_1(float NoH, float3 h, float3 t, float3 b, float at, float ab)
+// float D_GGX_Anisotropic_2_1(float NoH, float3 h, float3 t, float3 b, float at, float ab)
 // {
 // 	float ToH = dot(t, h);
 // 	float BoH = dot(b, h);
@@ -53,7 +53,7 @@ half D_GGX_2(half NoH, half roughness)
 // 	return a2 * w2 * w2 * (1.0 / PI);
 // }
 
-float D_GGX_Anisotropic(float NoH, float3 h, float3 t, float3 b, float at, float ab) { // Filamented Anisotropic
+float D_GGX_Anisotropic_2(float NoH, float3 h, float3 t, float3 b, float at, float ab) { // Filamented Anisotropic
     float ToH = dot(t, h);
     float BoH = dot(b, h);
     float a2 = at * ab;
@@ -83,7 +83,7 @@ float V_SmithGGXCorrelated_2(half NoV, half NoL, half roughness)
 	#endif
 }
 
-float V_SmithGGXCorrelated_Anisotropic(float at, float ab, float ToV, float BoV, float ToL, float BoL, float NoV, float NoL)
+float V_SmithGGXCorrelated_Anisotropic_2(float at, float ab, float ToV, float BoV, float ToL, float BoL, float NoV, float NoL)
 {
 	float lambdaV = NoL * length(float3(at * ToV, ab * BoV, NoV));
 	float lambdaL = NoV * length(float3(at * ToL, ab * BoL, NoL));
@@ -143,11 +143,11 @@ void BurleyDiffuseAndGGXSpecularLightAnisotropicNode(out half3 diffuse, out half
 			#ifndef _SPECULARHIGHLIGHTS_OFF
 				half3 F = F_Schlick_2(LoH, f0) * energyCompensation;
 				// half D = D_GGX_2(NoH, clampedRoughness);-
-				half D = D_GGX_Anisotropic(NoH, h, t, b, at, ab);
+				half D = D_GGX_Anisotropic_2(NoH, h, t, b, at, ab);
 				// half V = V_SmithGGXCorrelated_2(NoV, NoL, clampedRoughness);
-				half V = V_SmithGGXCorrelated_Anisotropic(at, ab, ToV, BoV, ToL, BoL, NoV, NoL);
+				half V = V_SmithGGXCorrelated_Anisotropic_2(at, ab, ToV, BoV, ToL, BoL, NoV, NoL);
 
-				specular = max(0.0, (D * V) * F) * diffuse * UNITY_PI * energyCompensation;
+				specular = max(0.0, (D * V) * F) * diffuse * PI * energyCompensation;
 				// specular = D;
 			#endif
 		}

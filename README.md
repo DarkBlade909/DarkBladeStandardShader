@@ -13,7 +13,3 @@ Basic Standard shader for VRChat with some extra features.
 - Specular Occlusion
 - Backface Normals
 - Green Channel Flip Toggles
-
-## Credits
-
-[MochiesCode](https://github.com/MochiesCode/Mochies-Unity-Shaders/releases) - GUI used for the shader

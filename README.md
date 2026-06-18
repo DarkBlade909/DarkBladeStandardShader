@@ -8,8 +8,12 @@ Basic Standard shader for VRChat with some extra features.
 - Detail Maps
 - Clearcoat
 - Anisotropy
+- Cloth shading
+- Retroreflective shading
 - Geometric Specular Anti-aliasing
 - Indirect Specular
 - Specular Occlusion
-- Backface Normals
-- Green Channel Flip Toggles
+- Flipped Backface Normals
+- Seperate Backface/UV1 AO
+- Shadow Mask
+- VRC Light Volumes

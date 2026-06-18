@@ -8,6 +8,7 @@ Basic Standard shader for VRChat with some extra features.
 - Detail Maps
 - Clearcoat
 - Anisotropy
+- Subsurface Scattering
 - Cloth shading
 - Retroreflective shading
 - Geometric Specular Anti-aliasing
